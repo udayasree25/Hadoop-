@@ -177,4 +177,67 @@ ROW FORMAT DELIMITED
 	LINES TERMINATED BY '\n'
 STORED AS TEXTFILE
 ;
-#After this step, Load the data into these tables
+#After this step, Load the data into these table
+------------------------------------------------
+LOAD DATA INPATH '/saledw/staging/employee/part-*' OVERWRITE INTO TABLE dimemployee;
+LOAD DATA INPATH '/saledw/staging/customer/part-*' OVERWRITE INTO TABLE dimcustomer;
+LOAD DATA INPATH '/saledw/staging/product/part-*' OVERWRITE INTO TABLE dimproduct;
+LOAD DATA INPATH '/saledw/staging/territory/part-*' OVERWRITE INTO TABLE dimterritory;
+LOAD DATA INPATH '/saledw/staging/date/part-*' OVERWRITE INTO TABLE dimdate;
+LOAD DATA INPATH '/saledw/staging/promotion/part-*' OVERWRITE INTO TABLE dimpromotion;
+--LOAD DATA INPATH '/saledw/staging/salesfact/part-*' INTO TABLE factsales;
+
+#Load the Fact sales Data into Hive, this can be done by the follwing commands:
+------------------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS factsalestemp
+(
+	TransactionId string,
+	CustomerId int,
+	Mode string,
+	TerritoryId int,
+	ProductId int,
+	EmployeeId int,
+	OrderQty float,
+	UnitPrice float,
+	UnitPriceDiscount float,
+	LineTotal float,	
+	OrderDate string,
+	PromotionId int
+)
+ROW FORMAT DELIMITED
+	FIELDS TERMINATED BY '|'
+	LINES TERMINATED BY '\n'
+STORED AS TEXTFILE
+;
+
+LOAD DATA INPATH '/saledw/staging/salesfact/part-*' OVERWRITE INTO TABLE factsalestemp;
+
+INSERT OVERWRITE TABLE factsales
+SELECT
+	c.DimCustomerKey,
+	p.DimProductKey,
+	t.DimTerritoryKey,	
+	e.DimEmployeeKey,
+	d.DimDateKey,
+	pr.DimPromotionKey,	
+	st.TransactionId,
+	st.Mode,
+	st.OrderQty,
+	st.UnitPrice,
+	st.UnitPriceDiscount,
+	st.LineTotal		
+FROM factsalestemp st
+LEFT OUTER JOIN dimemployee e
+ON (st.EmployeeId == e.EmployeeId)
+LEFT OUTER JOIN dimproduct p
+ON (st.ProductId == p.ProductId)
+LEFT OUTER JOIN dimcustomer c
+ON (st.CustomerId == c.CustomerId)
+LEFT OUTER JOIN dimterritory t
+ON (st.TerritoryId == t.TerritoryId)
+LEFT OUTER JOIN dimpromotion pr
+ON (st.PromotionId == pr.PromotionId)
+LEFT OUTER JOIN dimdate d
+ON (st.OrderDate == d.FullDate);
+
+#The above steps can be used to load the data. 
