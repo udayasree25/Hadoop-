@@ -1,0 +1,180 @@
+#Creating Tables - Fom CSV files. 
+
+# These tables are creating from CSV files comprising of Sales data (separated by '|')
+
+CREATE TABLE IF NOT EXISTS dimcustomer
+(
+	DimCustomerKey string,
+	CustomerId int, 
+	Title string, 
+	FirstName  string, 
+	MiddleName string, 
+	LastName  string, 
+	PhoneNumber  string,
+	EmailAddress  string, 
+	EmailPromotion  int,
+	AddressLine1  string,
+	AddressLine2  string,
+	AddressType  string,
+	City  string,
+	PostalCode  string,
+	StateProvinceName  string,
+	CountryRegionName  string,
+	TotalPurchaseYTD  float,
+	DateFirstPurchase  string,
+	BirthDate  string,
+	MaritalStatus  string,
+	YearlyIncome  float,
+	Gender  string,
+	TotalChildren  int,
+	NumberChildrenAtHome  int,
+	NumberCarsOwned  int,
+	Education  string,
+	Occupation  string,
+	HomeOwnerFlag   int,
+	ModifiedDate string
+)
+ROW FORMAT DELIMITED
+	FIELDS TERMINATED BY '|'
+	LINES TERMINATED BY '\n'
+STORED AS TEXTFILE
+;
+
+CREATE TABLE IF NOT EXISTS DimEmployee
+(
+	DimEmployeeKey string,
+	EmployeeId  int,
+	FirstName  String,
+	MiddleName  String,
+	LastName  String,
+	JobTitle  String,
+	PhoneNumber  String,
+	EmailAddress  String,
+	AddressLine1  String,
+	AddressLine2  String,
+	City  String,
+	StateProvinceName  String,
+	PostalCode  String,
+	CountryRegionName  String,
+	TerritoryName  String,
+	Prev_TerritoryName string,
+	TerritoryGroup  String,
+	SalesQuota  float,
+	Prev_SalesQuota float,
+	ModifiedDate string
+)
+ROW FORMAT DELIMITED
+	FIELDS TERMINATED BY '|'
+	LINES TERMINATED BY '\n'
+STORED AS TEXTFILE
+;
+
+CREATE TABLE IF NOT EXISTS dimproduct
+(
+	DimProductKey string,
+	ProductId int,
+	Product  string,
+	ProductNumber  string,
+	Color  string,
+	UnitPrice   float,
+	SalesPrice  float,
+	CategoryId  int,
+	Category   string,
+	SubCategoryID  int,
+	SubCategory  string,
+	ProductModelID  int,
+	Model   string,
+	StartDate string,
+	EndDate string,
+	Status int
+)
+ROW FORMAT DELIMITED
+	FIELDS TERMINATED BY '|'
+	LINES TERMINATED BY '\n'
+STORED AS TEXTFILE
+;
+
+CREATE TABLE IF NOT EXISTS dimpromotion
+(
+	DimPromotionKey string,
+	PromotionId  int,
+	Description  string,
+	DiscountPct  float,
+	Type  string,
+	Category  string,
+	StartDate  string,
+	EndDate  string,
+	MinQty  float,
+	MaxQty  float,
+	ModifiedDate string
+)
+ROW FORMAT DELIMITED
+	FIELDS TERMINATED BY '|'
+	LINES TERMINATED BY '\n'
+STORED AS TEXTFILE
+;
+
+CREATE TABLE IF NOT EXISTS dimterritory
+(
+	DimTerritoryKey string,
+	TerritoryId  int,
+	Name  string,
+	CountryRegionCode  string,
+	TerritoryGroup  string,
+	ModifiedDate string
+)
+ROW FORMAT DELIMITED
+	FIELDS TERMINATED BY '|'
+	LINES TERMINATED BY '\n'
+STORED AS TEXTFILE
+;
+
+CREATE TABLE IF NOT EXISTS dimdate
+(
+	DimDateKey string,
+	FullDate string,
+	DayNumberOfWeek int,
+	DayNameOfWeek string,
+	WeekDayType string,
+	DayNumberOfMonth int,
+	DayNumberOfYear int,
+	WeekNumberOfYear int,
+	MonthNameOfYear string,
+	MonthNumberOfYear int,
+	QuarterNumberCalendar int,
+	QuarterNameCalendar string,
+	YearCalendar int,
+	MonthNumberFiscal int,
+	QuarterNumberFiscal int,
+	QuarterNameFiscal string,
+	YearFiscal string,
+	ModifiedDate string
+
+)
+ROW FORMAT DELIMITED
+	FIELDS TERMINATED BY '|'
+	LINES TERMINATED BY '\n'
+STORED AS TEXTFILE
+;
+
+CREATE TABLE IF NOT EXISTS factsales
+(
+	DimCustomerKey string,
+	DimProductKey string,
+	DimTerritoryKey string,
+	DimEmployeeKey string,
+	DimDateKey string,
+	DimPromotionKey string,
+	TransactionID  string,
+	Mode  string,
+	OrderQty  float,
+	UnitPrice  float,
+	UnitPriceDiscount  float,
+	LineTotal  float
+)
+ROW FORMAT DELIMITED
+	FIELDS TERMINATED BY '|'
+	LINES TERMINATED BY '\n'
+STORED AS TEXTFILE
+;
+#After this step, Load the data into these tables
